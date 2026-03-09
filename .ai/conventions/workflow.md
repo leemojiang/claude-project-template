@@ -43,9 +43,23 @@ AI 在执行任何任务时必须遵循以下顺序：
 
 ---
 
-## 3. 各目录职责与文档格式
+## 3. 任务状态机（Task State Machine）
 
-### 3.1 `.ai/conventions/` — 全局规定
+AI 必须在所有任务中维护清晰状态，避免跨阶段或并行任务混淆：
+
+状态流转：
+`PENDING_PLAN → WAIT_APPROVAL → IMPLEMENTING → RECORDING_CHANGE → REVIEWING → DONE`
+
+要求：
+- 每个 `.ai/plan` 文档必须写明 `current_state` 与 `next_state`。
+- 进入新阶段时必须同步更新对应 plan 的状态字段。
+- Review 发现问题时必须回到 `PENDING_PLAN`，补充新的计划并等待批准。
+
+---
+
+## 4. 各目录职责与文档格式
+
+### 4.1 `.ai/conventions/` — 全局规定
 用于存放：
 
 - 项目编码规范
@@ -59,7 +73,17 @@ AI 必须在每次规划前读取此目录内容。
 
 ---
 
-### 3.2 `.ai/design/` — 项目设计文档
+### 4.2 任务编号规范
+- 计划文件：`task-YYYYMMDD-N`
+- 变更记录：`change-YYYYMMDD-N`
+- Review 记录：`review-YYYYMMDD-N`
+- `change` 与 `review` 的编号必须与对应 `plan` 完全一致。
+- 同一天多任务必须自动递增 `N`，不得复用或跳号。
+- 生成新计划前必须检查当天已存在的编号，选择下一个可用编号。
+
+---
+
+### 4.3 `.ai/design/` — 项目设计文档
 
 #### overview.md
 - 项目目标
@@ -89,7 +113,7 @@ AI 的义务：
 
 ---
 
-### 3.3 `.ai/plan/` — 执行计划
+### 4.4 `.ai/plan/` — 执行计划
 每次任务一个文件，例如：
 
 .ai/plan/task-20260309-1.md
@@ -100,14 +124,16 @@ AI 的义务：
 - 预期输出
 - 风险点
 - 执行步骤（Step-by-step）
+- current_state / next_state
 
 AI 的义务：
-    每次执行前必须生成一个 plan 文件
+    每次执行前必须生成一个 plan 文件并写入状态字段
     生成后必须停止，等待你批准
     未经批准不得执行任何修改
+    plan 编号必须符合编号规范并与后续 change/review 一致
 ---
 
-### 3.4 `.ai/modify/` 或 `.ai/rfc/` — 变更记录(Change Log)
+### 4.5 `.ai/modify/` 或 `.ai/rfc/` — 变更记录(Change Log)
 每次实现功能后，AI 必须生成一个变更文件，例如：
 
 .ai/modify/change-20260309-1.md
@@ -123,10 +149,11 @@ AI 的义务：
 AI 的义务：
     所有修改必须在此记录
     diff 必须完整、可读
+    change 编号必须与对应 plan 保持一致
     若修改与设计不一致，必须提出 RFC
 ---
 
-### 3.5 `.ai/review/` — Review 与测试结果
+### 4.6 `.ai/review/` — Review 与测试结果
 AI 完成修改后必须生成：
 .ai/review/review-20260309-1.md
 
@@ -139,11 +166,12 @@ AI 完成修改后必须生成：
 
 AI 的义务：
     review 必须真实、严格
+    review 编号必须与对应 plan 保持一致
     若发现问题必须提出修复计划（回到 plan 阶段）
 
 ---
 
-## 4. 全流程执行顺序（AI 必须遵守）
+## 5. 全流程执行顺序（AI 必须遵守）
 
 ## Step 1 — 文档更新（必须等待批准）
 AI 必须：
@@ -184,7 +212,7 @@ AI 必须：
 
 ---
 
-# 5. 用户与 AI 的交互协议（Approval Contract）
+# 6. 用户与 AI 的交互协议（Approval Contract）
 
 AI 必须遵守以下规则：
 
