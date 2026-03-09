@@ -8,10 +8,17 @@ AI 在开始任何任务前必须：
 
 1. 阅读并遵守 `.ai/conventions/workflow.md`
 2. 按 workflow 中的流程执行：
-   - 与用户交流,根据需求先更新设计或计划文档
-   - 停止并等待用户批准
+   - 与用户交流，根据需求先更新设计或计划文档（参考模板路径见 workflow）
+   - 停止并等待用户批准（批准仅指允许修改代码）
    - 获批后再进行代码修改
    - 完成后生成变更记录与 review 文档
+
+模板与目录（参考）：
+- 设计总览模板：`.ai/design/overview.md`
+- 任务计划模板：`.ai/plan/task-TEMPLATE.md`
+- 变更记录模板：`.ai/modify/change-TEMPLATE.md`
+- Review 模板：`.ai/review/review-TEMPLATE.md`
+- RFC 模板（可选）：`.ai/rfc/rfc-TEMPLATE.md`
 
 本文件仅作为入口说明，不包含具体流程内容。
 
@@ -22,4 +29,3 @@ AI 在开始任何任务前必须：
 ```
 
 AI 必须严格遵守该文件中的所有规则。
-

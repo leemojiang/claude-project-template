@@ -5,6 +5,21 @@ markdown
 
 ---
 
+## 0. 初始化（Bootstrap）
+
+本项目约定由 AI **手动创建** workflow 所需目录，并在对应位置放置模板文件。
+
+目录与模板路径（必须存在）：
+- `.ai/design/overview.md`（设计总览模板）
+- `.ai/plan/task-TEMPLATE.md`（计划模板）
+- `.ai/modify/change-TEMPLATE.md`（变更记录模板）
+- `.ai/review/review-TEMPLATE.md`（review 模板）
+- `.ai/rfc/rfc-TEMPLATE.md`（RFC 模板，可选但推荐保留）
+
+后续所有任务文档必须参考以上模板结构生成。
+
+---
+
 ## 1. 目录结构规范
 
 .ai/
@@ -13,8 +28,9 @@ markdown
 │     ├── overview.md
 │     └── components/*.md
 ├── plan/            # AI 执行计划（每任务一个文件）
-├── modify/ (或 rfc/) # 变更记录（diff、原因、影响范围）
-└── review/          # Review 结果与测试结果
+├── modify/          # 变更记录（diff、原因、影响范围）
+├── review/          # Review 结果与测试结果
+└── rfc/             # 重大设计变更提案（可选，触发时使用）
 
 
 ---
@@ -24,16 +40,17 @@ markdown
 AI 在执行任何任务时必须遵循以下顺序：
 
 ### Step 1 — 文档更新（Document Update）
-- AI 必须先更新 `.ai/design` 或 `.ai/plan` 中的相关文档。
+- AI 必须先更新 `.ai/design` 或 `.ai/plan` 中的相关文档（参考模板）。
 - 文档更新后必须停止，等待用户批准。
-- 未经批准不得进入下一阶段。
+- **批准仅指“允许修改代码（Implementation）”。**
+- 说明：除修改代码外，其他操作（例如：读取/搜索文件、创建/写入文档、运行测试、构建）默认不需要询问批准。
 
-### Step 2 — 实施（Implementation）
-- 用户批准后，AI 才能执行代码修改、创建文件、重构等操作。
+### Step 2 — 实施（Implementation：需要批准）
+- 用户批准后，AI 才能执行**代码修改**（包括创建/修改/删除代码文件、重构、功能实现等）。
 - 实施必须严格遵守 `.ai/conventions` 中的规范。
 
 ### Step 3 — 记录变更（Change Log）
-- 实施完成后，AI 必须在 `.ai/modify`（或 `.ai/rfc`）中生成变更记录。
+- 实施完成后，AI 必须在 `.ai/modify` 中生成变更记录。
 - 变更记录必须包含完整 diff、修改原因、影响范围、风险点。
 
 ### Step 4 — Review & Test
@@ -133,7 +150,7 @@ AI 的义务：
     plan 编号必须符合编号规范并与后续 change/review 一致
 ---
 
-### 4.5 `.ai/modify/` 或 `.ai/rfc/` — 变更记录(Change Log)
+### 4.5 `.ai/modify/` — 变更记录(Change Log)
 每次实现功能后，AI 必须生成一个变更文件，例如：
 
 .ai/modify/change-20260309-1.md
@@ -150,10 +167,20 @@ AI 的义务：
     所有修改必须在此记录
     diff 必须完整、可读
     change 编号必须与对应 plan 保持一致
-    若修改与设计不一致，必须提出 RFC
+
 ---
 
-### 4.6 `.ai/review/` — Review 与测试结果
+### 4.6 `.ai/rfc/` — 重大设计变更提案（RFC，可选）
+当出现以下情况之一时，必须提交 RFC：
+- 设计文档 `.ai/design` 需要改动且会影响既有实现/接口/数据结构
+- 需要引入新的关键依赖或显著改变架构决策
+
+RFC 文件示例：
+.ai/rfc/rfc-20260309-1.md
+
+---
+
+### 4.7 `.ai/review/` — Review 与测试结果
 AI 完成修改后必须生成：
 .ai/review/review-20260309-1.md
 
@@ -177,13 +204,15 @@ AI 的义务：
 AI 必须：
 
 - 更新 `.ai/design` 或 `.ai/plan`
-- 停止并等待你的批准
+- 停止并等待你的批准（批准仅指允许修改代码）
+
+说明：除修改代码外，其他操作（例如：读写/创建文档、运行测试、构建）默认不需要批准。
 
 你批准后才能进入下一步。
 
 ---
 
-## Step 2 — 实施（Implementation）
+## Step 2 — 实施（Implementation：需要批准）
 AI 执行代码修改：
 
 - 创建文件
@@ -216,12 +245,12 @@ AI 必须：
 
 AI 必须遵守以下规则：
 
-- **未经你批准不得执行任何修改**
-- **每次任务必须先生成 plan**
-- **每次设计变更必须先更新 design 文档**
-- **每次实现后必须生成 modify + review**
+- **未经你批准不得执行任何代码修改（Implementation）**
+- 每次任务必须先生成 plan
+- 每次设计变更必须先更新 design 文档
+- 每次实现后必须生成 modify + review
 
-你可以通过一句话批准：
+你可以通过一句话批准（允许修改代码）：
 
 ```
 批准执行
