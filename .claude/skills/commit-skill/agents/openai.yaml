@@ -1,0 +1,4 @@
+interface:
+  display_name: "Commit"
+  short_description: "生成规范 commit message 并提交当前修改"
+  default_prompt: "提交当前仓库未提交的修改：先检查 git status/diff，自动生成规范 commit message（type/scope/title/body），明确列出要提交的文件并逐个 git add（避免 add . / -A，排除 *.bak-*、*.html.bak-*、*.tmp 等临时文件），最后执行 git commit。"
